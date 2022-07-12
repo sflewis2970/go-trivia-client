@@ -1,0 +1,55 @@
+services:
+  cache:
+    image: redis:7.0
+    container_name: CNT-Cache
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --save 30 1 --loglevel warning
+    volumes:
+      - cache:/data
+
+  dsapi:
+    image: ds-service
+    container_name: CNT-DSService2
+    depends_on: 
+      - cache
+    ports:
+      - 9090:9090
+    environment:
+      HOSTNAME:
+      HOSTPORT: :9090
+      ACTIVEDRIVER: goredis
+      GOREDIS_HOST: cache
+      GOREDIS_PORT: :6379
+      GOREDIS_PASSWORD: 
+
+  trivia-service:
+    image: trivia-service
+    container_name: CNT-TriviaService2
+    depends_on: 
+      - dsapi
+    ports:
+      - 8080:8080
+    environment:
+      HOSTNAME:
+      HOSTPORT: :8080
+      DS_NAME: dsapi
+      DS_PORT: :9090
+
+  web-client:
+    image: trivia-client
+    container_name: CNT-WEBCLIENT
+    depends_on: 
+      - trivia-service
+    ports:
+      - 3000:3000
+    environment:
+      HOSTNAME:
+      HOSTPORT: :3000
+      TRIVIA_SERVICE_NAME: trivia-service
+      TRIVIA_SERVICE_PORT: :8080
+
+volumes:
+  cache:
+    driver: local
