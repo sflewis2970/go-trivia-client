@@ -28,7 +28,6 @@ func New(viewsDir string, layout string, files ...string) *View {
 	t, err := template.ParseFiles(files...)
 	if err != nil {
 		log.Print("error parsing files: ", err)
-		log.Fatal("Stop processing...")
 	}
 
 	return &View{
