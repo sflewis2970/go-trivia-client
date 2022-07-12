@@ -1,8 +1,49 @@
 {{define "content"}}
-<div class="container">
   <div class="jumbotron">
-    <h1>Welcome to my site!</h1>
-    <p>This is where I would normally ask you to sign up for something.</p>
+    <h1 class="display-3">Trivia Application</h1>
+
+    <p>This application is allows users to retrieve trivia questions at random and attempt to answer them.</p>
+    <p><a class="btn btn-primary btn-lg" href="/trivia/faq" role="button">Learn more &raquo;</a></p>
   </div>
-</div>
+
+  <form action="/trivia" method="post">
+    {{ .MessageResponse.QuestionIDInputCtrl }}
+
+    <div class="form-group row">
+      <label for="staticQuestion" class="col-sm-2 col-form-label">Question</label>
+
+      <div class="col-sm-10">
+        {{ .MessageResponse.QuestionInputCtrl }}
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="staticCategory" class="col-sm-2 col-form-label">Category</label>
+
+      <div class="col-sm-10">
+        {{ .MessageResponse.CategoryInputCtrl }}
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Answer</label>
+
+      <div class="col-sm-10">
+        {{template "select" .}}
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-sm-2"></div>
+
+      <div class="col-sm-10">
+        <div class="btn-group" role="group" aria-label="Trivia Button Group">
+          <button type="submit" class="btn btn-primary" formaction="/trivia/newquestion" formmethod="port">New Question</button>
+          <button type="submit" class="btn btn-primary" formaction="/trivia/answerquestion" formmethod="post">Answer Question</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  {{template "alert" .}}
 {{end}}
