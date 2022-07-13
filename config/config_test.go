@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	HOSTPORTVAL          string = ":3000"
+	HOSTPORTVAL          string = "3000"
 	TRIVIASERVICENAMEVAL string = "trivia-service"
-	TRIVIASERVICEPORTVAL string = ":8080"
+	TRIVIASERVICEPORTVAL string = "8080"
 )
 
 func TestGetConfig(t *testing.T) {
@@ -21,8 +21,8 @@ func TestGetConfig(t *testing.T) {
 }
 
 func setEnvVars() {
-	os.Setenv(HOSTNAME, "")
-	os.Setenv(HOSTPORT, HOSTPORTVAL)
+	os.Setenv(HOST, "")
+	os.Setenv(PORT, HOSTPORTVAL)
 	os.Setenv(TRIVIASERVICENAME, TRIVIASERVICENAMEVAL)
 	os.Setenv(TRIVIASERVICEPORT, TRIVIASERVICEPORTVAL)
 }
@@ -36,8 +36,8 @@ func TestGetConfigData(t *testing.T) {
 		return
 	}
 
-	if cfgData.HostPort != HOSTPORTVAL {
-		t.Errorf("Invalid host port value..., got: %s, expected: %s", cfgData.HostPort, HOSTPORTVAL)
+	if cfgData.Port != HOSTPORTVAL {
+		t.Errorf("Invalid host port value..., got: %s, expected: %s", cfgData.Port, HOSTPORTVAL)
 		return
 	}
 
