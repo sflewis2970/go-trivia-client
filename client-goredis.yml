@@ -11,31 +11,31 @@ services:
 
   dsapi:
     image: sflewis/datastore-service
-    container_name: CNT-DSService2
+    container_name: CNT-DSService
     depends_on: 
       - cache
     ports:
       - 9090:9090
     environment:
-      HOSTNAME:
-      HOSTPORT: :9090
-      ACTIVEDRIVER: goredis
-      GOREDIS_HOST: cache
-      GOREDIS_PORT: :6379
-      GOREDIS_PASSWORD: 
+      HOST:
+      PORT: 9090
+      ACTIVEDRIVER: redis
+      REDIS_TLS_URL: cache
+      REDIS_URL: cache
+      REDIS_PORT: 6379
 
   trivia-service:
     image: sflewis/trivia-service
-    container_name: CNT-TriviaService2
+    container_name: CNT-TriviaService
     depends_on: 
       - dsapi
     ports:
       - 8080:8080
     environment:
-      HOSTNAME:
-      HOSTPORT: :8080
-      DS_NAME: dsapi
-      DS_PORT: :9090
+      HOST:
+      PORT: 8080
+      DS_NAME: http://dsapi
+      DS_PORT: 9090
 
   web-client:
     image: sflewis/trivia-client
@@ -45,10 +45,10 @@ services:
     ports:
       - 3000:3000
     environment:
-      HOSTNAME:
-      HOSTPORT: :3000
-      TRIVIA_SERVICE_NAME: trivia-service
-      TRIVIA_SERVICE_PORT: :8080
+      HOST:
+      PORT: 3000
+      TRIVIA_SERVICE_NAME: http://trivia-service
+      TRIVIA_SERVICE_PORT: 8080
 
 volumes:
   cache:
