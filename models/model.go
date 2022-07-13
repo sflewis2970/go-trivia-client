@@ -42,7 +42,7 @@ type Model struct {
 func (m *Model) NewQuestion() {
 	// Call Trivia Service to get new question
 	log.Print("Retrieve new question from trivia service...")
-	getQuestionURL := "http://" + m.CfgData.TriviaServiceName + m.CfgData.TriviaServicePort + messages.GET_QUESTION_PATH
+	getQuestionURL := m.CfgData.TriviaServiceName + ":" + m.CfgData.TriviaServicePort + messages.GET_QUESTION_PATH
 	log.Print("getQuestionURL: ", getQuestionURL)
 	response, getErr := http.Get(getQuestionURL)
 	if getErr != nil {
@@ -85,7 +85,7 @@ func (m *Model) AnswerQuestion(questionID string, userResponse string) {
 		return
 	}
 
-	answerQuestionURL := "http://" + m.CfgData.TriviaServiceName + m.CfgData.TriviaServicePort + messages.ANSWER_QUESTION_PATH
+	answerQuestionURL := m.CfgData.TriviaServiceName + ":" + m.CfgData.TriviaServicePort + messages.ANSWER_QUESTION_PATH
 	log.Print("answerQuestionURL: ", answerQuestionURL)
 	response, postErr := http.Post(answerQuestionURL, "application/json", bytes.NewBuffer(requestBody))
 	if postErr != nil {
