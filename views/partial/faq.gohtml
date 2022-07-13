@@ -1,5 +1,5 @@
 {{define "content"}}
-<div class="accordion" id="accordionExample">
+<div class="accordion" id="faqAccordion">
   <div class="card">
     <div class="card-header" id="headingOne">
       <h2 class="mb-0">
@@ -9,9 +9,9 @@
       </h2>
     </div>
 
-    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#faqAccordion">
       <div class="card-body">
-        Trivia application is a web application that allows the user to retrieve trivia questions from a Trivia Service.
+        Trivia application is a web application that allows users to request trivia questions and submit answers.
       </div>
     </div>
   </div>
@@ -20,13 +20,14 @@
     <div class="card-header" id="headingTwo">
       <h2 class="mb-0">
         <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          What is Category?
+          How do I get started?
         </button>
       </h2>
     </div>
-    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#faqAccordion">
       <div class="card-body">
-        Category is the subject matter which the question can be found.
+        When the home page loads, the default form is displayed. Click 'New Question' button to request a trivia question.
       </div>
     </div>
   </div>
@@ -35,13 +36,46 @@
     <div class="card-header" id="headingThree">
       <h2 class="mb-0">
         <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          How do I answer a question?
+        </button>
+      </h2>
+    </div>
+
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#faqAccordion">
+      <div class="card-body">
+        Once a trivia question is loaded, select the answer from the dropdown list. <strong>Note: There should be exactly one answer.</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingFour">
+      <h2 class="mb-0">
+        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+          What is Category?
+        </button>
+      </h2>
+    </div>
+
+    <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#faqAccordion">
+      <div class="card-body">
+        Category is the subject matter which the question can be found.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingFive">
+      <h2 class="mb-0">
+        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
           When a Category lists a question as "unclassified" what does that mean?
         </button>
       </h2>
     </div>
-    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+
+    <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#faqAccordion">
       <div class="card-body">
-        When a question is retrieved, a question usually has an associated Category when no Category is listed "uncalssified" is returned.
+        When a question is retrieved, a question usually has an associated Category when no Category is listed "unclassified" is returned.
       </div>
     </div>
   </div>
