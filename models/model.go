@@ -42,8 +42,14 @@ type Model struct {
 func (m *Model) NewQuestion() {
 	// Call Trivia Service to get new question
 	log.Print("Retrieve new question from trivia service...")
-	getQuestionURL := m.CfgData.TriviaServiceName + ":" + m.CfgData.TriviaServicePort + messages.GET_QUESTION_PATH
+	var getQuestionURL string
+	if m.CfgData.Env == config.PRODUCTION {
+		getQuestionURL = m.CfgData.TriviaServiceName + messages.GET_QUESTION_PATH
+	} else {
+		getQuestionURL = m.CfgData.TriviaServiceName + ":" + m.CfgData.TriviaServicePort + messages.GET_QUESTION_PATH
+	}
 	log.Print("getQuestionURL: ", getQuestionURL)
+
 	response, getErr := http.Get(getQuestionURL)
 	if getErr != nil {
 		log.Print("Error getting response data: ", getErr)
@@ -85,8 +91,14 @@ func (m *Model) AnswerQuestion(questionID string, userResponse string) {
 		return
 	}
 
-	answerQuestionURL := m.CfgData.TriviaServiceName + ":" + m.CfgData.TriviaServicePort + messages.ANSWER_QUESTION_PATH
+	var answerQuestionURL string
+	if m.CfgData.Env == config.PRODUCTION {
+		answerQuestionURL = m.CfgData.TriviaServiceName + messages.ANSWER_QUESTION_PATH
+	} else {
+		answerQuestionURL = m.CfgData.TriviaServiceName + ":" + m.CfgData.TriviaServicePort + messages.ANSWER_QUESTION_PATH
+	}
 	log.Print("answerQuestionURL: ", answerQuestionURL)
+
 	response, postErr := http.Post(answerQuestionURL, "application/json", bytes.NewBuffer(requestBody))
 	if postErr != nil {
 		log.Print("Error posting message: ", postErr)

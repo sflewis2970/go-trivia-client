@@ -10,13 +10,21 @@ const REFRESH_CONFIG_DATA string = "refresh"
 // Config variable keys
 const (
 	// Host system info
+	ENV               string = "ENV"
 	HOST              string = "HOST"
 	PORT              string = "PORT"
 	TRIVIASERVICENAME string = "TRIVIA_SERVICE_NAME"
 	TRIVIASERVICEPORT string = "TRIVIA_SERVICE_PORT"
 )
 
+// Config variable values
+const (
+	// Host system info
+	PRODUCTION string = "PROD"
+)
+
 type ConfigData struct {
+	Env               string `json:"env"`
 	Host              string `json:"host"`
 	Port              string `json:"port"`
 	TriviaServiceName string `json:"triviaservicename"`
@@ -35,6 +43,7 @@ func (c *config) getConfigEnv() error {
 	log.Print("loading config environment variables...")
 
 	// Update config data
+	c.cfgData.Env = os.Getenv(ENV)
 	c.cfgData.Host = os.Getenv(HOST)
 	c.cfgData.Port = os.Getenv(PORT)
 	c.cfgData.TriviaServiceName = os.Getenv(TRIVIASERVICENAME)
