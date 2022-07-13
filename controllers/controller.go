@@ -11,9 +11,10 @@ import (
 var viewsDir string = "views"
 
 type Controller struct {
-	triviaView    *views.View
-	triviaFAQView *views.View
-	triviaModel   *models.Model
+	triviaView     *views.View
+	triviaFAQView  *views.View
+	triviaModel    *models.Model
+	triviaFAQModel *models.Model
 }
 
 var controller *Controller
@@ -30,6 +31,7 @@ func New() *Controller {
 
 func (c *Controller) createModels() {
 	controller.triviaModel = models.New()
+	controller.triviaFAQModel = models.New()
 }
 
 func (c *Controller) createViews() {
@@ -55,7 +57,7 @@ func TriviaHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func FaqHandler(w http.ResponseWriter, r *http.Request) {
-	controller.triviaFAQView.Render(w, nil)
+	controller.triviaFAQView.Render(w, controller.triviaFAQModel)
 }
 
 func NewQuestionHandler(w http.ResponseWriter, r *http.Request) {
