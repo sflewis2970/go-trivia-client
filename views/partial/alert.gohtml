@@ -1,8 +1,8 @@
 {{define "alert"}}
-  {{ if .MessageResponse.DisplayAlert }}
-    {{ if .MessageResponse.CorrectAnswer }}
+  {{ if .WebControl.DisplayAlert }}
+    {{ if .Response.CorrectAnswer }}
       <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <strong>Congratulations!</strong> {{ .MessageResponse.Response }} is correct
+        <strong>Congratulations!</strong> {{ .Response.UserResponse }} is correct
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -10,7 +10,7 @@
       </div>
     {{ else }}
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <strong>Nice Try!</strong> {{ .MessageResponse.Response }} is NOT correct. The correct answer is {{ .MessageResponse.Answer }}. Better luck on the next question.
+        <strong>Nice Try!</strong> {{ .Response.UserResponse }} is NOT correct. The correct answer is {{ .Response.Answer }}. Better luck on the next question.
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>

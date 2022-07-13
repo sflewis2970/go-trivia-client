@@ -7,13 +7,13 @@
   </div>
 
   <form action="/trivia" method="post">
-    {{ .MessageResponse.QuestionIDInputCtrl }}
+    {{ .WebControl.QuestionIDCtrl }}
 
     <div class="form-group row">
       <label for="staticQuestion" class="col-sm-2 col-form-label">Question</label>
 
       <div class="col-sm-10">
-        {{ .MessageResponse.QuestionInputCtrl }}
+        {{ .WebControl.QuestionCtrl }}
       </div>
     </div>
 
@@ -21,7 +21,7 @@
       <label for="staticCategory" class="col-sm-2 col-form-label">Category</label>
 
       <div class="col-sm-10">
-        {{ .MessageResponse.CategoryInputCtrl }}
+        {{ .WebControl.CategoryCtrl }}
       </div>
     </div>
 
@@ -38,7 +38,7 @@
 
       <div class="col-sm-10">
         <div class="btn-group" role="group" aria-label="Trivia Button Group">
-          <button type="submit" class="btn btn-primary" formaction="/trivia/newquestion" formmethod="port">New Question</button>
+          <button type="submit" class="btn btn-primary" formaction="/trivia/newquestion" formmethod="post">New Question</button>
           <button type="submit" class="btn btn-primary" formaction="/trivia/answerquestion" formmethod="post">Answer Question</button>
         </div>
       </div>
