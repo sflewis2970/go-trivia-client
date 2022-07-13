@@ -10,7 +10,7 @@ services:
       - cache:/data
 
   dsapi:
-    image: ds-service
+    image: sflewis/datastore-service
     container_name: CNT-DSService2
     depends_on: 
       - cache
@@ -25,7 +25,7 @@ services:
       GOREDIS_PASSWORD: 
 
   trivia-service:
-    image: trivia-service
+    image: sflewis/trivia-service
     container_name: CNT-TriviaService2
     depends_on: 
       - dsapi
@@ -38,7 +38,7 @@ services:
       DS_PORT: :9090
 
   web-client:
-    image: trivia-client
+    image: sflewis/trivia-client
     container_name: CNT-WEBCLIENT
     depends_on: 
       - trivia-service
