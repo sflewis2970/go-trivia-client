@@ -17,26 +17,31 @@ const (
 	ANSWER_QUESTION  string = "ANSWER_QUESTION"
 )
 
-type MessageResponse struct {
-	QuestionID          string
-	QuestionIDInputCtrl template.HTML
-	Question            string
-	QuestionInputCtrl   template.HTML
-	Category            string
-	CategoryInputCtrl   template.HTML
-	Choices             []string
-	ChoicesInputCtrl    template.HTML
-	DisplayAlert        bool
-	CorrectAnswer       bool
-	Answer              string
-	Response            string
-	Message             string
+type Responses struct {
+	QuestionID    string
+	Question      string
+	Category      string
+	Choices       []string
+	CorrectAnswer bool
+	Answer        string
+	UserResponse  string
+	Message       string
+}
+
+type WebControls struct {
+	QuestionIDCtrl template.HTML
+	QuestionCtrl   template.HTML
+	CategoryCtrl   template.HTML
+	ChoicesCtrl    template.HTML
+	DisplayAlert   bool
 }
 
 type Model struct {
-	CfgData         *config.ConfigData
-	Action          string
-	MessageResponse MessageResponse
+	CfgData           *config.ConfigData
+	IsAppInProduction bool
+	Action            string
+	Response          Responses
+	WebControl        WebControls
 }
 
 func (m *Model) NewQuestion() {
@@ -64,8 +69,8 @@ func (m *Model) NewQuestion() {
 	json.NewDecoder(response.Body).Decode(&qResponse)
 
 	// Reset alert
-	m.MessageResponse.DisplayAlert = false
-	m.MessageResponse.CorrectAnswer = false
+	m.WebControl.DisplayAlert = false
+	m.Response.CorrectAnswer = false
 
 	// Update action
 	m.Action = NEW_QUESTION
@@ -113,13 +118,13 @@ func (m *Model) AnswerQuestion(questionID string, userResponse string) {
 	json.NewDecoder(response.Body).Decode(&aResponse)
 
 	// Update results message field
-	m.MessageResponse.DisplayAlert = true
-	m.MessageResponse.CorrectAnswer = aResponse.Correct
-	m.MessageResponse.Answer = aResponse.Answer
-	m.MessageResponse.Response = aResponse.Response
+	m.WebControl.DisplayAlert = true
+	m.Response.CorrectAnswer = aResponse.Correct
+	m.Response.Answer = aResponse.Answer
+	m.Response.UserResponse = aResponse.Response
 
 	log.Print("Message: ", aResponse.Message)
-	m.MessageResponse.Message = aResponse.Message
+	m.Response.Message = aResponse.Message
 
 	// Update action
 	m.Action = ANSWER_QUESTION
@@ -133,60 +138,60 @@ func (m *Model) UpdateModelData(msg any) {
 	if m.Action == RESET_MODEL_DATA || m.Action == NEW_QUESTION {
 		response := msg.(messages.QuestionResponse)
 
-		m.MessageResponse.QuestionID = response.QuestionID
-		m.MessageResponse.Question = response.Question
+		m.Response.QuestionID = response.QuestionID
+		m.Response.Question = response.Question
 		if len(response.Category) > 0 {
-			m.MessageResponse.Category = response.Category
+			m.Response.Category = response.Category
 		} else {
-			m.MessageResponse.Category = "<unclassified>"
+			m.Response.Category = "<unclassified>"
 		}
 
-		m.MessageResponse.Choices = response.Choices
+		m.Response.Choices = response.Choices
 	} else if m.Action == ANSWER_QUESTION {
 		response := msg.(messages.AnswerResponse)
 
-		m.MessageResponse.Question = response.Question
-		m.MessageResponse.Category = response.Category
+		m.Response.Question = response.Question
+		m.Response.Category = response.Category
 		if len(response.Category) > 0 {
-			m.MessageResponse.Category = response.Category
+			m.Response.Category = response.Category
 		} else {
-			m.MessageResponse.Category = "<unclassified>"
+			m.Response.Category = "<unclassified>"
 		}
 	}
 }
 
 func (m *Model) UpdateModelControls() {
 	// Question ID control
-	questionIDInputCtrl := "<input type='hidden' class='form-control' id='inputHiddenQuestionID' name='questionID' value='" + m.MessageResponse.QuestionID + "'>"
-	m.MessageResponse.QuestionIDInputCtrl = template.HTML(questionIDInputCtrl)
+	questionIDCtrl := "<input type='hidden' class='form-control' id='inputHiddenQuestionID' name='questionID' value='" + m.Response.QuestionID + "'>"
+	m.WebControl.QuestionIDCtrl = template.HTML(questionIDCtrl)
 
 	// Question control
-	questionInputCtrl := "<input type='text' readonly class='form-control-plaintext' id='staticQuestion' value='" + m.MessageResponse.Question + "'> "
-	m.MessageResponse.QuestionInputCtrl = template.HTML(questionInputCtrl)
+	questionCtrl := "<input type='text' readonly class='form-control-plaintext' id='staticQuestion' value='" + m.Response.Question + "'> "
+	m.WebControl.QuestionCtrl = template.HTML(questionCtrl)
 
 	// Category control
-	categoryInputCtrl := "<input type='text' readonly class='form-control-plaintext' id='staticCategory' value='" + m.MessageResponse.Category + "'> "
-	m.MessageResponse.CategoryInputCtrl = template.HTML(categoryInputCtrl)
+	categoryCtrl := "<input type='text' readonly class='form-control-plaintext' id='staticCategory' value='" + m.Response.Category + "'> "
+	m.WebControl.CategoryCtrl = template.HTML(categoryCtrl)
 
 	// Choices control
-	choicesInputCtrl := "<select id='idResponse' name='response'>"
-	for idx, choice := range m.MessageResponse.Choices {
+	choicesCtrl := "<select id='idResponse' name='response'>"
+	for idx, choice := range m.Response.Choices {
 		if idx == 0 {
-			choicesInputCtrl = choicesInputCtrl + "<option selected>" + choice + "</option>"
+			choicesCtrl = choicesCtrl + "<option selected>" + choice + "</option>"
 		} else {
-			choicesInputCtrl = choicesInputCtrl + "<option value='" + choice + "'>" + choice + "</option>"
+			choicesCtrl = choicesCtrl + "<option value='" + choice + "'>" + choice + "</option>"
 		}
 	}
-	choicesInputCtrl = choicesInputCtrl + "</select>"
-	m.MessageResponse.ChoicesInputCtrl = template.HTML(choicesInputCtrl)
+	choicesCtrl = choicesCtrl + "</select>"
+	m.WebControl.ChoicesCtrl = template.HTML(choicesCtrl)
 }
 
 func (m *Model) ResetModel() {
 	var qResponse messages.QuestionResponse
 
 	// Reset alert
-	m.MessageResponse.DisplayAlert = false
-	m.MessageResponse.CorrectAnswer = false
+	m.WebControl.DisplayAlert = false
+	m.Response.CorrectAnswer = false
 
 	m.Action = RESET_MODEL_DATA
 	qResponse.Question = "Question will be placed here"
@@ -201,6 +206,10 @@ func (m *Model) GetConfigData() {
 	if cfgDataErr != nil {
 		log.Print("Error getting response data: ", cfgDataErr)
 		return
+	}
+
+	if m.CfgData.Env == config.PRODUCTION {
+		m.IsAppInProduction = true
 	}
 }
 
