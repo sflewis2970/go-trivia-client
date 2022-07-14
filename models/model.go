@@ -22,6 +22,7 @@ type Responses struct {
 	Question      string
 	Category      string
 	Choices       []string
+	RecordFound   bool
 	CorrectAnswer bool
 	Answer        string
 	UserResponse  string
@@ -30,7 +31,6 @@ type Responses struct {
 
 type WebControls struct {
 	QuestionIDCtrl template.HTML
-	QuestionCtrl   template.HTML
 	CategoryCtrl   template.HTML
 	ChoicesCtrl    template.HTML
 	DisplayAlert   bool
@@ -44,6 +44,7 @@ type Model struct {
 	WebControl        WebControls
 }
 
+// Exported type methods
 func (m *Model) NewQuestion() {
 	// Call Trivia Service to get new question
 	log.Print("Retrieve new question from trivia service...")
@@ -68,16 +69,12 @@ func (m *Model) NewQuestion() {
 	// Read response stream into JSON
 	json.NewDecoder(response.Body).Decode(&qResponse)
 
-	// Reset alert
-	m.WebControl.DisplayAlert = false
-	m.Response.CorrectAnswer = false
-
 	// Update action
 	m.Action = NEW_QUESTION
 
 	// Question ID will come from Trivia Service
-	m.UpdateModelData(qResponse)
-	m.UpdateModelControls()
+	m.updateModelData(qResponse)
+	m.updateModelControls()
 }
 
 func (m *Model) AnswerQuestion(questionID string, userResponse string) {
@@ -117,27 +114,39 @@ func (m *Model) AnswerQuestion(questionID string, userResponse string) {
 	// Read response stream into JSON
 	json.NewDecoder(response.Body).Decode(&aResponse)
 
-	// Update results message field
-	m.WebControl.DisplayAlert = true
-	m.Response.CorrectAnswer = aResponse.Correct
-	m.Response.Answer = aResponse.Answer
-	m.Response.UserResponse = aResponse.Response
-
-	log.Print("Message: ", aResponse.Message)
-	m.Response.Message = aResponse.Message
-
 	// Update action
 	m.Action = ANSWER_QUESTION
 
 	// Question ID will come from Trivia Service
-	m.UpdateModelData(aResponse)
-	m.UpdateModelControls()
+	m.updateModelData(aResponse)
+	m.updateModelControls()
 }
 
-func (m *Model) UpdateModelData(msg any) {
+func (m *Model) ResetModel() {
+	var qResponse messages.QuestionResponse
+
+	// Update action
+	m.Action = RESET_MODEL_DATA
+
+	// Update response fields
+	qResponse.Question = "Question will be placed here"
+	qResponse.Category = "Category will be placed here"
+	m.updateModelData(qResponse)
+	m.updateModelControls()
+}
+
+// Unexported type methods
+func (m *Model) updateModelData(msg any) {
 	if m.Action == RESET_MODEL_DATA || m.Action == NEW_QUESTION {
+		// Set Alert flag
+		m.WebControl.DisplayAlert = false
+
+		// Convert message to QuestionResponse
 		response := msg.(messages.QuestionResponse)
 
+		// Set Response fields
+		m.Response.CorrectAnswer = false
+		m.Response.RecordFound = false
 		m.Response.QuestionID = response.QuestionID
 		m.Response.Question = response.Question
 		if len(response.Category) > 0 {
@@ -148,9 +157,26 @@ func (m *Model) UpdateModelData(msg any) {
 
 		m.Response.Choices = response.Choices
 	} else if m.Action == ANSWER_QUESTION {
+		// Set Alert flag
+		m.WebControl.DisplayAlert = true
+
+		// Convert message to AnswerResponse
 		response := msg.(messages.AnswerResponse)
 
+		// Set Response fields
+		m.Response.CorrectAnswer = response.Correct
+		m.Response.Answer = response.Answer
+		m.Response.Message = response.Message
+
 		m.Response.Question = response.Question
+		if len(m.Response.Question) > 0 {
+			m.Response.RecordFound = true
+			m.Response.UserResponse = response.Response
+		} else {
+			m.Response.RecordFound = false
+			m.Response.UserResponse = "Record not found."
+		}
+
 		m.Response.Category = response.Category
 		if len(response.Category) > 0 {
 			m.Response.Category = response.Category
@@ -160,14 +186,10 @@ func (m *Model) UpdateModelData(msg any) {
 	}
 }
 
-func (m *Model) UpdateModelControls() {
+func (m *Model) updateModelControls() {
 	// Question ID control
 	questionIDCtrl := "<input type='hidden' class='form-control' id='inputHiddenQuestionID' name='questionID' value='" + m.Response.QuestionID + "'>"
 	m.WebControl.QuestionIDCtrl = template.HTML(questionIDCtrl)
-
-	// Question control
-	questionCtrl := "<input type='text' readonly class='form-control-plaintext' id='staticQuestion' value='" + m.Response.Question + "'> "
-	m.WebControl.QuestionCtrl = template.HTML(questionCtrl)
 
 	// Category control
 	categoryCtrl := "<input type='text' readonly class='form-control-plaintext' id='staticCategory' value='" + m.Response.Category + "'> "
@@ -184,20 +206,6 @@ func (m *Model) UpdateModelControls() {
 	}
 	choicesCtrl = choicesCtrl + "</select>"
 	m.WebControl.ChoicesCtrl = template.HTML(choicesCtrl)
-}
-
-func (m *Model) ResetModel() {
-	var qResponse messages.QuestionResponse
-
-	// Reset alert
-	m.WebControl.DisplayAlert = false
-	m.Response.CorrectAnswer = false
-
-	m.Action = RESET_MODEL_DATA
-	qResponse.Question = "Question will be placed here"
-	qResponse.Category = "Category will be placed here"
-	m.UpdateModelData(qResponse)
-	m.UpdateModelControls()
 }
 
 func (m *Model) GetConfigData() {
