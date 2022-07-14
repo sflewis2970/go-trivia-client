@@ -1,16 +1,26 @@
 {{define "alert"}}
   {{ if .WebControl.DisplayAlert }}
-    {{ if .Response.CorrectAnswer }}
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <strong>Congratulations!</strong> {{ .Response.UserResponse }} is correct
+    {{ if .Response.RecordFound }}
+      {{ if .Response.CorrectAnswer }}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <strong>Congratulations!</strong> {{ .Response.UserResponse }} is correct
 
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {{ else }}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <strong>Nice Try!</strong> {{ .Response.UserResponse }} is NOT correct. The correct answer is {{ .Response.Answer }}. Better luck on the next question.
+
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {{ end }}
     {{ else }}
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <strong>Nice Try!</strong> {{ .Response.UserResponse }} is NOT correct. The correct answer is {{ .Response.Answer }}. Better luck on the next question.
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Error!</strong> {{ .Response.UserResponse }} 
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
