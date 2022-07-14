@@ -48,20 +48,28 @@ func (c *Controller) defineRoutes() {
 }
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
+	// Redirect request
 	http.Redirect(w, r, "/trivia", http.StatusMovedPermanently)
 }
 
 func TriviaHandler(w http.ResponseWriter, r *http.Request) {
+	// Reset data model
 	controller.triviaModel.ResetModel()
+
+	// Render view with updated data
 	controller.triviaView.Render(w, controller.triviaModel)
 }
 
 func FaqHandler(w http.ResponseWriter, r *http.Request) {
+	// Render view with initially created data model (no update required)
 	controller.triviaFAQView.Render(w, controller.triviaFAQModel)
 }
 
 func NewQuestionHandler(w http.ResponseWriter, r *http.Request) {
+	// Get new question from trivia service
 	controller.triviaModel.NewQuestion()
+
+	// Render view with updated data
 	controller.triviaView.Render(w, controller.triviaModel)
 }
 
@@ -77,6 +85,9 @@ func AnswerQuestionHandler(w http.ResponseWriter, r *http.Request) {
 	questionID := r.PostForm.Get("questionID")
 	response := r.PostForm.Get("response")
 
+	// Check answer with trivia service
 	controller.triviaModel.AnswerQuestion(questionID, response)
+
+	// Render view with updated data
 	controller.triviaView.Render(w, controller.triviaModel)
 }
